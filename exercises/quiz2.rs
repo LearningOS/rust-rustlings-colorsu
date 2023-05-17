@@ -6,7 +6,7 @@
 // - Modules
 // - Enums
 
-// Let's build a little machine in form of a function.
+// Let's build a little machine in the form of a function.
 // As input, we're going to give a list of strings and commands. These commands
 // determine what action is going to be applied to the string. It can either be:
 // - Uppercase the string
@@ -18,8 +18,8 @@
 // - The output element is going to be a Vector of strings.
 // No hints this time!
 
-// I AM NOT DONE
 
+#[derive(Debug)]
 pub enum Command {
     Uppercase,
     Trim,
@@ -30,25 +30,61 @@ mod my_module {
     use super::Command;
 
     // TODO: Complete the function signature!
-    pub fn transformer(input: ???) -> ??? {
+    pub fn transformer(input: Vec<(String, Command)>) -> Vec<String> {
         // TODO: Complete the output declaration!
-        let mut output: ??? = vec![];
+        let mut output: Vec<String> = vec![];
         for (string, command) in input.iter() {
             // TODO: Complete the function body. You can do it!
+            println!("string = {}, command = {:?}", string, command);
+            let mut s_back = string.clone();
+            let mut s = String::new();
+            s = match command {
+                Command::Uppercase => {
+                    s = string.to_ascii_uppercase();
+                    println!("upper: {}", &s);
+                    s
+                },
+                Command::Trim => {
+                    s = string.trim().to_string();
+                    s
+                },
+                Command::Append(us) => {
+                    for _i in 0..*us {
+                        s_back.push_str(string.as_str());
+                    }
+                    s_back
+                }
+            };
+            output.push(s)
         }
         output
+    }
+
+    //chatGPT
+    pub fn transformer2(input: Vec<(String, Command)>) -> Vec<String> {
+        input
+            .iter()
+            .map(|(string, command)| {
+                match command {
+                    Command::Uppercase => string.to_ascii_uppercase(),
+                    Command::Trim => string.trim().to_string(),
+                    Command::Append(times) => string.repeat(times + 1),
+                }
+            })
+            .collect()
     }
 }
 
 #[cfg(test)]
 mod tests {
-    // TODO: What do we have to import to have `transformer` in scope?
-    use ???;
+    // TODO: What do we need to import to have `transformer` in scope?
+    // use super::my_module::transformer;
+    use super::my_module::transformer2;
     use super::Command;
 
     #[test]
     fn it_works() {
-        let output = transformer(vec![
+        let output = transformer2(vec![
             ("hello".into(), Command::Uppercase),
             (" all roads lead to rome! ".into(), Command::Trim),
             ("foo".into(), Command::Append(1)),
@@ -56,7 +92,7 @@ mod tests {
         ]);
         assert_eq!(output[0], "HELLO");
         assert_eq!(output[1], "all roads lead to rome!");
-        assert_eq!(output[2], "foobar");
+        assert_eq!(output[2], "foofoo");
         assert_eq!(output[3], "barbarbarbarbarbar");
     }
 }
